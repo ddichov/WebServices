@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8]> 				
+     <html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Web Chat application</title>
+    <script src="js/class.js"></script>
+    <script src="js/http-requester.js"></script>
+    <script src="js/ui.js"></script>
+    <link href="css/presentation.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/foundation.css">
+    <link href="css/iPhoneStyle.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="js/persisters.js"></script>
+    <script src="js/cryptojs-sha1.js"></script>
+    <script src="js/vendor/jquery.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="js/vendor/custom.modernizr.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="http://cdn.pubnub.com/pubnub-3.5.3.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #signin-form {
+            display: none;
+        }
+
+        section {
+            display: none;
+        }
+
+        footer form {
+            display: inline-block;
+            background: #212121;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+            height: 100%;
+            width: 100%;
+            background: -moz-radial-gradient(50% 46% 90deg,circle closest-corner, #242424, #090909);
+            background: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 150, from(#242424), to(#090909));
+            -webkit-box-shadow: 0px 0px 1px 1px #444;
+            -moz-box-shadow: 0px 0px 1px 1px #444;
+            box-shadow: 0px 0px 1px 1px #444;
+        }
+
+            footer form label {
+                display: block;
+                padding: 10px 10px 5px 15px;
+                font-size: 11px;
+                color: #777;
+            }
+
+            footer form input {
+                display: block;
+                margin: 5px 10px 10px 15px;
+                width: 85%;
+                background: #111;
+                -moz-box-shadow: 0px 0px 4px #000 inset;
+                -webkit-box-shadow: 0px 0px 4px #000 inset;
+                box-shadow: 0px 0px 4px #000 inset;
+                border: 1px solid #000;
+                padding: 5px;
+                font-size: 16px;
+            }
+
+                footer form input:focus {
+                    outline: 1px solid #555;
+                    transition: 200ms linear;
+                }
+
+
+                footer form input[type=submit] {
+                    margin-right: 20px;
+                }
+
+        #include_history {
+            padding: 10px 3px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="row">
+            <div class="twelve columns">
+                <a href="#sidebar" id="sidebarButton" class="sidebar-button show-for-small">
+                    <img src="images/offcanvas/menu-wht.png" alt=""><h4>Foundation</h4>
+                </a>
+                <h1 class="hide-for-small">Web Chat application</h1>
+                <h4 class="hide-for-small">Build for the future.</h4>
+            </div>
+        </div>
+    </header>
+    <section class="example" id="mainContent">
+        <aside>
+            <div>
+                <p class="right">
+                    <a id="logout-btn" class="small blue nice radius button" href="#">Log Out</a>
+                </p>
+            </div>
+        </aside>
+        <div class="row">
+            <div class="six columns">
+                <div class="four phone-one columns">
+                    <img id="sender_image" src="" alt="">
+                </div>
+                <div class="eight phone-three columns">
+                    <p>
+                        <a href="#" id="sender_username"></a>
+                        <br>
+                    </p>
+                </div>
+            </div>
+            <div class="six columns">
+                <div class="eight phone-three columns" style="text-align: right;">
+                    <p>
+                        <a href="#" id="receiver_username"></a>
+                        <br>
+                    </p>
+                </div>
+                <div class="four phone-one columns">
+                    <img id='receiver_image' src="" alt="">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+        <div class="row">
+            <div class="six columns" id="contacts">
+                <h4>My Contacts
+                    <a class="right" href="#" id="add-contact">add +</a>
+                </h4>
+                <div id="contact-names">
+                </div>
+            </div>
+            <div class="six columns">
+                <h4 class="text-right">
+                    <!--<label for="history" class="left">History</label>
+                    <input class="left" id="showHistory" type="checkbox" name="history" value="" />-->
+                    <input id="include_history" data-role="button" type="submit" value="Include current chat-mate history" class="disabled">
+                    Messages
+                </h4>
+                <div id="iPhoneBro" class="iPhone gen">
+                    <ul data-role="listview" id="conversation" class="conversation ">
+                        <li class="time" style=""></li>
+                        <!--<li class="text sent" style="">
+                            <div class="reflect"></div>
+                            <p>
+                                <strong><a href="#">Me</a> said:</strong>
+                                Not sure if trolling, or just stupid #fry
+                                    
+                            </p>
+                        </li>
+                        <li class="text receive" style="">
+                            <div class="reflect"></div>
+                            <p>
+                                <strong><a href="#" id="sender">Pe6o</a> said:</strong>
+                                Stay cool man :P
+                                    <br />
+                            </p>
+                        </li>-->
+                    </ul>
+                </div>
+
+                <div class="message">
+                    <input id="messageContent" type="text" name="message" value="" placeholder="Text Message">
+                    <input id="sendMessageButton" data-role="button" type="submit" value="Send" class="disabled">
+                </div>
+
+                <!-- added for MultyChannel-->
+                <h5>Multychat BETA</h5>
+                <div id="page-multy" class="iPhone gen">
+                    <ul data-role="listview" id="conversationMulty" class="conversation ">
+                        <li class="time" style=""></li>
+                    </ul>
+                </div>
+                <div class="message">
+                    <input id="messageContentMulty" type="text" name="message" value="" placeholder="Text Message">
+                    <input id="sendMessageButtonMulty" data-role="button" type="submit" value="Send" class="disabled">
+                </div>
+                <!-- END 'added for MultyChannel'-->
+            </div>
+        </div>
+    </section>
+    <footer class="toggler">
+        <div class="row">
+            <form method="post" id="login-form">
+                <label for="username">User name</label>
+                <input id="login-nickname" type="text" placeholder="Username" name="username">
+                <label for="pass">Password</label>
+                <input id="login-pass" type="password" placeholder="Password" name="pass">
+
+                <input class="button two small right" type="button" id="signin-button" name="sign-in" value="Sign in">
+                <input class="button two small right" type="button" id="login-btn" name="log-in" value="LOG IN">
+            </form>
+            <form method="post" enctype="multipart/form-data" id="signin-form">
+                <label for="username">User name</label>
+                <input id="reg-nickname" type="text" placeholder="Username" name="username">
+                <label for="pass">Password</label>
+                <input id="reg-pass" type="password" placeholder="Password" name="pass">
+                <label for="repass">Repeate Password</label>
+                <input id="reg-repass" type="password" placeholder="Password" name="repass">
+                <label for="email">Email</label>
+                <input id="reg-email" type="email" placeholder="Email" name="email">
+                <label for="img">Avatar image</label>
+                <input id="reg-imgUrl" type="text" name="img">
+                <input id="reg-btn" class="button two small right" type="button" value="Register">
+            </form>
+        </div>
+    </footer>
+    <script>
+        document.write('<script src=' +
+        ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+        '.js><\/script>')
+    </script>
+    <script src="js/foundation.min.js"></script>
+    <script>
+        $(document).foundation();
+    </script>
+    <script>
+        diegoChat.load();
+    </script>
+    <script src="js/chat-script.js"></script>
+</body>
+</html>
